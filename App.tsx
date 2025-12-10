@@ -53,6 +53,43 @@ const App: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleSend = async (text: string) => {
+    if (!text.trim()) return;
+    
+    if (!isLoggedIn && !hasStarted) {
+      setShowLogin(true);
+      return;
+    }
+
+    const userMessage: Message = { role: 'user', text: text.trim() };
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+    setIsLoading(true);
+    setHasStarted(true);
+
+    try {
+      const response = await sendMessageToGemini(text.trim());
+      const aiMessage: Message = { role: 'model', text: response };
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        role: 'model',
+        text: 'Maaf, terjadi kesalahan. Silakan coba lagi.',
+        isError: true
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend(inputText);
+    }
+  };
+
   useEffect(() => {
     if ((hasStarted || isLoggedIn) && !showDownloadPage && !showProfile && !showAdminLogin) {
       scrollToBottom();
