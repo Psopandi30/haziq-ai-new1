@@ -159,10 +159,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
     );
 
     return (
-        <div className="flex flex-col md:flex-row w-full h-screen bg-[#f1f5f9] overflow-hidden">
+        <div className="flex flex-col md:flex-row w-full h-screen bg-[#f1f5f9]">
 
             {/* --- Sidebar Modern --- */}
-            <div className="w-full md:w-72 bg-[#0f4c3a] flex flex-col shrink-0 shadow-2xl relative z-20">
+            <div className="w-full md:w-72 bg-[#0f4c3a] flex flex-col shrink-0 shadow-2xl relative z-20 overflow-y-auto">
                 <div className="p-8 flex items-center gap-4">
                     <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center text-white font-bold text-xl border border-white/10">
                         Hz
@@ -255,22 +255,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
                             <table className="w-full text-left">
                                 <thead className="bg-slate-50 border-b border-slate-100">
                                     <tr>
-                                        <th className="p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Mahasiswa</th>
-                                        <th className="p-6 text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">NIM / Identitas</th>
-                                        <th className="p-6 text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">Fakultas</th>
-                                        <th className="p-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                                        <th className="p-6 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Aksi</th>
+                                        <th className="px-4 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Mahasiswa</th>
+                                        <th className="px-4 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">NIM / Identitas</th>
+                                        <th className="px-4 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">Fakultas</th>
+                                        <th className="px-4 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                                        <th className="px-4 py-3 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
                                     {filteredUsers.length === 0 ? (
                                         <tr>
-                                            <td colSpan={5} className="p-12 text-center text-slate-400">Tidak ada data ditemukan.</td>
+                                            <td colSpan={5} className="p-8 text-center text-slate-400">Tidak ada data ditemukan.</td>
                                         </tr>
                                     ) : (
                                         filteredUsers.map((user) => (
                                             <tr key={user.id} className="hover:bg-slate-50/80 transition-colors group">
-                                                <td className="p-6">
+                                                <td className="px-4 py-3">
                                                     <div className="flex items-center gap-4">
                                                         <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0f4c3a] to-[#2d6a58] flex items-center justify-center text-white font-bold text-sm shadow-md">
                                                             {user.name.charAt(0).toUpperCase()}
@@ -281,13 +281,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="p-6 hidden md:table-cell">
+                                                <td className="px-4 py-3 hidden md:table-cell">
                                                     <span className="font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded text-sm">{user.nim}</span>
                                                 </td>
-                                                <td className="p-6 hidden md:table-cell">
+                                                <td className="px-4 py-3 hidden md:table-cell">
                                                     <span className="text-slate-600 text-sm">{user.prodi}</span>
                                                 </td>
-                                                <td className="p-6">
+                                                <td className="px-4 py-3">
                                                     {user.isVerified ? (
                                                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
                                                             <CheckCircle size={12} />
@@ -299,7 +299,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
                                                         </button>
                                                     )}
                                                 </td>
-                                                <td className="p-6 text-right">
+                                                <td className="px-4 py-3 text-right">
                                                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <button onClick={() => handleOpenEditModal(user)} className="p-2 text-slate-400 hover:text-[#0f4c3a] hover:bg-emerald-50 rounded-lg transition-colors">
                                                             <PenSquare size={18} />
