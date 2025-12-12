@@ -40,6 +40,30 @@ const App: React.FC = () => {
     webhookUrl: 'https://n8n.wasm123.com/webhook/f0a5c9e9-3c4d-4e3a-8f7b-2d1e6a9c4b8f'
   });
 
+  // Load config from Supabase
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('app_config')
+          .select('*')
+          .single();
+        
+        if (data && !error) {
+          setAppConfig({
+            description: data.description,
+            downloadLink: data.download_link,
+            webhookUrl: data.webhook_url
+          });
+        }
+      } catch (err) {
+        console.error("Error loading config:", err);
+      }
+    };
+
+    fetchConfig();
+  }, []);
+
   // Navigation State
   const [hasStarted, setHasStarted] = useState(false);
   const [showLogin, setShowLogin] = useState(false);

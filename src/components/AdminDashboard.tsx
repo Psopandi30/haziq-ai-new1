@@ -165,24 +165,52 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
         }
     };
 
-    const handleSaveConfig = () => {
-        // Save general app configuration (description and download link)
-        setAppConfig({
-            description: localDesc,
-            downloadLink: localLink,
-            webhookUrl: appConfig.webhookUrl // Keep existing webhook
-        });
-        alert("Konfigurasi aplikasi tersimpan!");
+    const handleSaveConfig = async () => {
+        try {
+            const { error } = await supabase.from('app_config').upsert({
+                id: 1,
+                description: localDesc,
+                download_link: localLink,
+                webhook_url: appConfig.webhookUrl
+            });
+
+            if (error) throw error;
+
+            // Save general app configuration (description and download link)
+            setAppConfig({
+                description: localDesc,
+                downloadLink: localLink,
+                webhookUrl: appConfig.webhookUrl
+            });
+            alert("Konfigurasi aplikasi tersimpan!");
+        } catch (err) {
+            console.error("Error saving config:", err);
+            alert("Gagal menyimpan konfigurasi.");
+        }
     };
 
-    const handleSaveWebhook = () => {
-        // Save webhook configuration separately
-        setAppConfig({
-            description: appConfig.description, // Keep existing description
-            downloadLink: appConfig.downloadLink, // Keep existing download link
-            webhookUrl: localWebhook
-        });
-        alert("Webhook N8N berhasil diperbarui!");
+    const handleSaveWebhook = async () => {
+        try {
+            const { error } = await supabase.from('app_config').upsert({
+                id: 1,
+                description: appConfig.description,
+                download_link: appConfig.downloadLink,
+                webhook_url: localWebhook
+            });
+
+            if (error) throw error;
+
+            // Save webhook configuration separately
+            setAppConfig({
+                description: appConfig.description,
+                downloadLink: appConfig.downloadLink,
+                webhookUrl: localWebhook
+            });
+            alert("Webhook N8N berhasil diperbarui!");
+        } catch (err) {
+            console.error("Error saving webhook:", err);
+            alert("Gagal menyimpan webhook.");
+        }
     };
 
     const filteredUsers = users.filter(u =>
@@ -355,8 +383,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
                                                 </td>
                                                 <td className="px-6 py-5 hidden md:table-cell">
                                                     <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${user.position === 'Mahasiswa' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
-                                                            user.position === 'Dosen' ? 'bg-purple-50 text-purple-700 border border-purple-100' :
-                                                                'bg-orange-50 text-orange-700 border border-orange-100'
+                                                        user.position === 'Dosen' ? 'bg-purple-50 text-purple-700 border border-purple-100' :
+                                                            'bg-orange-50 text-orange-700 border border-orange-100'
                                                         }`}>
                                                         {user.position || 'Mahasiswa'}
                                                     </div>
