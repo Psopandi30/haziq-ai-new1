@@ -1,15 +1,14 @@
-
-const N8N_WEBHOOK_URL = 'https://n8n-wqv0ozihh8ge.caca.sumopod.my.id/webhook/haziq%20ai';
-
 /**
  * Sends a message to the n8n Webhook.
  * 
  * @param prompt - The current user message.
+ * @param webhookUrl - The N8N webhook URL (configurable from admin panel).
  * @param history - The conversation history (formatted from App.tsx).
  * @returns The text response from the webhook.
  */
 export const sendMessageToGemini = async (
   prompt: string,
+  webhookUrl: string,
   history: { role: string; parts: { text: string }[] }[] = []
 ): Promise<string> => {
   try {
@@ -23,7 +22,7 @@ export const sendMessageToGemini = async (
       timestamp: new Date().toISOString()
     };
 
-    const response = await fetch(N8N_WEBHOOK_URL, {
+    const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -8,6 +8,7 @@ import { UserProfile } from './components/UserProfile';
 import { DownloadApk } from './components/DownloadApk';
 import { AdminLogin } from './components/AdminLogin';
 import { AdminDashboard } from './components/AdminDashboard';
+import { InstallPrompt } from './components/InstallPrompt';
 import { sendMessageToGemini } from './services/geminiService';
 import { Message, QuickAction, UserData, AppConfig } from './types';
 import { supabase } from './services/supabaseClient';
@@ -24,6 +25,7 @@ const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
 
   // Data State
   // Data State - Fetched from Supabase now
@@ -34,7 +36,8 @@ const App: React.FC = () => {
   // App Config State
   const [appConfig, setAppConfig] = useState<AppConfig>({
     description: 'Haziq AI adalah asisten cerdas yang dirancang khusus untuk mahasiswa Institut Agama Islam Persis Garut. Aplikasi ini membantu dalam penyusunan jurnal, pencarian referensi akademik, serta studi Al-Quran dan Hadits.',
-    downloadLink: '#'
+    downloadLink: '#',
+    webhookUrl: 'https://n8n.wasm123.com/webhook/f0a5c9e9-3c4d-4e3a-8f7b-2d1e6a9c4b8f'
   });
 
   // Navigation State
@@ -53,6 +56,40 @@ const App: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Save chat session to database
+  const saveChatSession = async (msgs: Message[]) => {
+    if (!currentUser || msgs.length === 0) return;
+
+    try {
+      // Generate title from first user message
+      const firstUserMsg = msgs.find(m => m.role === 'user');
+      const title = firstUserMsg ? firstUserMsg.text.substring(0, 50) + (firstUserMsg.text.length > 50 ? '...' : '') : 'Chat Baru';
+
+      if (currentSessionId) {
+        // Update existing session
+        const { error } = await supabase
+          .from('chat_sessions')
+          .update({ messages: msgs, updated_at: new Date().toISOString() })
+          .eq('id', currentSessionId);
+        if (error) console.error('Error updating session:', error);
+      } else {
+        // Create new session
+        const { data, error } = await supabase
+          .from('chat_sessions')
+          .insert([{ user_id: currentUser.id, title, messages: msgs }])
+          .select()
+          .single();
+        if (error) {
+          console.error('Error creating session:', error);
+        } else if (data) {
+          setCurrentSessionId(data.id);
+        }
+      }
+    } catch (err) {
+      console.error('Error saving chat session:', err);
+    }
+  };
+
   const handleSend = async (text: string) => {
     if (!text.trim()) return;
 
@@ -62,22 +99,29 @@ const App: React.FC = () => {
     }
 
     const userMessage: Message = { role: 'user', text: text.trim() };
-    setMessages(prev => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInputText('');
     setIsLoading(true);
     setHasStarted(true);
 
     try {
-      const response = await sendMessageToGemini(text.trim());
+      const response = await sendMessageToGemini(text.trim(), appConfig.webhookUrl);
       const aiMessage: Message = { role: 'model', text: response };
-      setMessages(prev => [...prev, aiMessage]);
+      const finalMessages = [...updatedMessages, aiMessage];
+      setMessages(finalMessages);
+
+      // Auto-save after AI response
+      await saveChatSession(finalMessages);
     } catch (error) {
       const errorMessage: Message = {
         role: 'model',
         text: 'Maaf, terjadi kesalahan. Silakan coba lagi.',
         isError: true
       };
-      setMessages(prev => [...prev, errorMessage]);
+      const finalMessages = [...updatedMessages, errorMessage];
+      setMessages(finalMessages);
+      await saveChatSession(finalMessages);
     } finally {
       setIsLoading(false);
     }
@@ -161,9 +205,11 @@ const App: React.FC = () => {
       const newUserPayload = {
         nim: data.nim,
         name: data.name,
+        full_name: data.full_name,
         prodi: data.prodi,
         username: data.username,
         password: data.password,
+        position: data.position || 'Mahasiswa',
         is_verified: false
       };
 
@@ -233,28 +279,29 @@ const App: React.FC = () => {
 
   const renderLanding = () => (
     <>
-      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-5xl mx-auto px-6 relative overflow-y-auto pb-40">
+      {/* Scrollable Content Area */}
+      <div className="flex-1 w-full max-w-5xl mx-auto px-6 overflow-y-auto pb-52 pt-4 h-full flex flex-col justify-start items-center">
 
         {/* Abstract Background Blur */}
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-[#0f4c3a]/10 rounded-full blur-[100px] pointer-events-none"></div>
         <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-emerald-400/10 rounded-full blur-[100px] pointer-events-none"></div>
 
         {/* Hero Text */}
-        <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 pt-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-semibold tracking-wide mb-6">
+        <div className="text-center mb-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-semibold tracking-wide mb-4">
             <Sparkles size={12} />
             <span>Asisten Akademik Cerdas</span>
           </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-slate-800 tracking-tight leading-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 tracking-tight leading-tight">
             Apa yang bisa <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0f4c3a] to-emerald-500">Haziq</span> bantu?
           </h2>
-          <p className="mt-4 text-slate-500 text-lg md:text-xl max-w-2xl mx-auto font-light">
+          <p className="mt-3 text-slate-500 text-base max-w-xl mx-auto font-light">
             Tanyakan seputar jurnal, tafsir, atau referensi akademik Institut Agama Islam Persis Garut.
           </p>
         </div>
 
         {/* Quick Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
           {QUICK_ACTIONS.map((action, idx) => (
             <button
               key={idx}
@@ -269,9 +316,9 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Fixed Bottom Input Bar */}
-      <div className="absolute bottom-6 left-0 right-0 px-4 flex justify-center z-20">
-        <div className="w-full max-w-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl shadow-slate-300/40 rounded-[2rem] p-2 pl-6 flex items-center gap-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-[#0f4c3a]/20 transition-all">
+      {/* Fixed Bottom Input Bar  */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 pb-6 flex justify-center z-50 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none">
+        <div className="w-full max-w-3xl bg-white/90 backdrop-blur-xl border border-white/40 shadow-2xl shadow-slate-300/40 rounded-[2rem] p-2 pl-6 flex items-center gap-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-[#0f4c3a]/20 transition-all pointer-events-auto">
           <MessageSquare className="text-slate-400 w-6 h-6" />
           <input
             type="text"
@@ -371,9 +418,8 @@ const App: React.FC = () => {
         <div ref={messagesEndRef} />
       </div >
 
-      {/* Floating Sticky Input */}
-      < div className="absolute bottom-6 left-0 right-0 px-4 flex justify-center z-20" >
-        <div className="w-full max-w-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl shadow-slate-300/40 rounded-[2rem] p-2 pl-6 flex items-center gap-2 ring-1 ring-slate-200">
+      <div className="fixed bottom-0 left-0 right-0 p-4 pb-6 flex justify-center z-50 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none">
+        <div className="w-full max-w-3xl bg-white/90 backdrop-blur-xl border border-white/40 shadow-2xl shadow-slate-300/40 rounded-[2rem] p-2 pl-6 flex items-center gap-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-[#0f4c3a]/20 transition-all pointer-events-auto">
           <input
             type="text"
             value={inputText}
@@ -394,8 +440,8 @@ const App: React.FC = () => {
             {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : <ArrowUp className="w-5 h-5" strokeWidth={3} />}
           </button>
         </div>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 
   const renderContent = () => {
@@ -443,12 +489,49 @@ const App: React.FC = () => {
         }}
         onNewChat={() => {
           setMessages([]);
+          setCurrentSessionId(null);
           setIsSidebarOpen(false);
           setShowProfile(false);
           setShowDownloadPage(false);
           setShowAdminLogin(false);
           setIsAdminLoggedIn(false);
           if (!isLoggedIn) setHasStarted(false);
+        }}
+        onLoadSession={async (sessionId: number) => {
+          try {
+            const { data, error } = await supabase
+              .from('chat_sessions')
+              .select('*')
+              .eq('id', sessionId)
+              .single();
+            if (error) throw error;
+            if (data) {
+              setMessages(data.messages || []);
+              setCurrentSessionId(data.id);
+              setIsSidebarOpen(false);
+              setHasStarted(true);
+            }
+          } catch (err) {
+            console.error('Error loading session:', err);
+            alert('Gagal memuat riwayat chat');
+          }
+        }}
+        onDeleteSession={async (sessionId: number) => {
+          try {
+            const { error } = await supabase
+              .from('chat_sessions')
+              .delete()
+              .eq('id', sessionId);
+            if (error) throw error;
+            // If deleting current session, start new chat
+            if (sessionId === currentSessionId) {
+              setMessages([]);
+              setCurrentSessionId(null);
+            }
+          } catch (err) {
+            console.error('Error deleting session:', err);
+            alert('Gagal menghapus riwayat');
+          }
         }}
       />
 
@@ -465,6 +548,9 @@ const App: React.FC = () => {
           onRegister={handleRegister}
         />
       )}
+
+      {/* PWA Install Prompt */}
+      <InstallPrompt />
     </div>
   );
 };
