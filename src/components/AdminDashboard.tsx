@@ -219,7 +219,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
     );
 
     return (
-        <div className="flex flex-col md:flex-row w-full h-screen bg-[#f1f5f9] overflow-hidden">
+        <div className="flex flex-col md:flex-row w-full h-full bg-[#f1f5f9] overflow-hidden">
 
             {/* --- Sidebar Modern --- */}
             {/* --- Sidebar Modern --- */}
