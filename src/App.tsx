@@ -48,7 +48,7 @@ const App: React.FC = () => {
           .from('app_config')
           .select('*')
           .single();
-        
+
         if (data && !error) {
           setAppConfig({
             description: data.description,
@@ -184,6 +184,27 @@ const App: React.FC = () => {
     }
   };
 
+  // Check for persisted login on mount
+  useEffect(() => {
+    const persistedUser = localStorage.getItem('haziq_user');
+    if (persistedUser) {
+      try {
+        const user = JSON.parse(persistedUser);
+        setCurrentUser(user);
+        setIsLoggedIn(true);
+        setHasStarted(true);
+      } catch (e) {
+        console.error("Failed to parse persisted user", e);
+        localStorage.removeItem('haziq_user');
+      }
+    }
+
+    const persistedAdmin = localStorage.getItem('haziq_admin_session');
+    if (persistedAdmin === 'true') {
+      setIsAdminLoggedIn(true);
+    }
+  }, []);
+
   const handleLogin = async (nimInput: string, passwordInput: string) => {
     // For prototype: we check against the loaded users list (which contains passwords).
     // In production: use supabase.auth or a server-side check.
@@ -201,14 +222,17 @@ const App: React.FC = () => {
       setShowDownloadPage(false);
       setShowAdminLogin(false);
       setIsAdminLoggedIn(false);
+      localStorage.setItem('haziq_user', JSON.stringify(foundUser));
     } else {
       // Fallback check against fresh data just in case state wasn't updated
       const { data } = await supabase.from('students').select('*').or(`nim.eq.${nimInput},username.eq.${nimInput}`).eq('password', passwordInput).single();
       if (data) {
-        setCurrentUser(data as any);
+        const userObj = data as any;
+        setCurrentUser(userObj);
         setShowLogin(false);
         setIsLoggedIn(true);
         setHasStarted(true);
+        localStorage.setItem('haziq_user', JSON.stringify(userObj));
         return;
       }
 
@@ -261,11 +285,13 @@ const App: React.FC = () => {
     setIsAdminLoggedIn(false);
     setMessages([]);
     setInputText('');
+    localStorage.removeItem('haziq_user');
   };
 
   const handleAdminLogout = () => {
     setIsAdminLoggedIn(false);
     setShowAdminLogin(true);
+    localStorage.removeItem('haziq_admin_session');
   };
 
   const handleDownloadClick = () => {
@@ -286,6 +312,7 @@ const App: React.FC = () => {
 
   const handleAdminLoginSuccess = () => {
     setIsAdminLoggedIn(true);
+    localStorage.setItem('haziq_admin_session', 'true');
   };
 
   const handleChatClick = () => {
