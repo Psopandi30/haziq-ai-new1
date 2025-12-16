@@ -1,23 +1,34 @@
+import { UserData } from '../types';
+
 /**
  * Sends a message to the n8n Webhook.
  * 
  * @param prompt - The current user message.
  * @param webhookUrl - The N8N webhook URL (configurable from admin panel).
+ * @param user - The current user data (optional).
  * @param history - The conversation history (formatted from App.tsx).
  * @returns The text response from the webhook.
  */
 export const sendMessageToGemini = async (
   prompt: string,
   webhookUrl: string,
+  user: UserData | null,
   history: { role: string; parts: { text: string }[] }[] = []
 ): Promise<string> => {
   try {
     // Construct the payload.
     // We send 'chatInput' which is commonly used by n8n AI nodes, 
-    // as well as 'message' and 'history'.
+    // as well as 'message', 'history', and 'user' context.
     const payload = {
       chatInput: prompt,
       message: prompt,
+      user: user ? {
+        name: user.name,
+        full_name: user.full_name,
+        nim: user.nim,
+        prodi: user.prodi,
+        position: user.position || 'Mahasiswa'
+      } : null,
       history: history,
       timestamp: new Date().toISOString()
     };

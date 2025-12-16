@@ -126,18 +126,27 @@ const App: React.FC = () => {
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInputText('');
-    setIsLoading(true);
     setHasStarted(true);
+    setInputText('');
 
     try {
-      const response = await sendMessageToGemini(text.trim(), appConfig.webhookUrl);
+      // Format history for API
+      // Only take last 10 messages to avoid payload getting too large
+      const historyContext = updatedMessages.slice(-10).map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+      }));
+
+      const response = await sendMessageToGemini(text.trim(), appConfig.webhookUrl, currentUser, historyContext);
       const aiMessage: Message = { role: 'model', text: response };
       const finalMessages = [...updatedMessages, aiMessage];
       setMessages(finalMessages);
+      setIsLoading(false); // Set false here immediately if success
 
       // Auto-save after AI response
       await saveChatSession(finalMessages);
     } catch (error) {
+      setIsLoading(false);
       const errorMessage: Message = {
         role: 'model',
         text: 'Maaf, terjadi kesalahan. Silakan coba lagi.',
@@ -146,8 +155,6 @@ const App: React.FC = () => {
       const finalMessages = [...updatedMessages, errorMessage];
       setMessages(finalMessages);
       await saveChatSession(finalMessages);
-    } finally {
-      setIsLoading(false);
     }
   };
 
