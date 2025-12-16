@@ -463,12 +463,13 @@ const App: React.FC = () => {
         ))}
         {
           isLoading && (
-            <div className="flex w-full justify-start items-center gap-3 animate-pulse">
-              <div className="w-8 h-8 rounded-full bg-slate-200"></div>
-              <div className="bg-white border border-slate-100 rounded-[2rem] rounded-tl-sm px-6 py-4 shadow-sm flex items-center gap-2">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></span>
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce delay-100"></span>
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce delay-200"></span>
+            <div className="flex w-full justify-start items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0f4c3a] to-emerald-600 flex items-center justify-center text-white text-xs font-serif font-bold shadow-sm shrink-0">
+                Hz
+              </div>
+              <div className="flex items-center gap-3 px-4 py-3 bg-white border border-emerald-100 rounded-2xl shadow-sm">
+                <Loader2 className="w-5 h-5 text-emerald-600 animate-spin" />
+                <span className="text-sm font-medium text-slate-600 animate-pulse">Haziq sedang berpikir...</span>
               </div>
             </div>
           )
