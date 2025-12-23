@@ -165,7 +165,7 @@ async function callGroq(apiKey: string, messages: any[]) {
     },
     body: JSON.stringify({
       messages: messages,
-      model: "llama3-8b-8192" // Fast and efficient
+      model: "llama-3.3-70b-versatile" // Updated to latest supported model
     })
   });
 
