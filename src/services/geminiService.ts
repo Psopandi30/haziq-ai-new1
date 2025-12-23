@@ -96,7 +96,9 @@ async function sendToGeminiDirectRotated(
     }
   }
 
-  throw lastError || new Error("All API keys failed.");
+  console.error("All API keys failed. Last error:", lastError);
+  // Return a user friendly message instead of throwing raw error stack
+  return "Maaf, saat ini sistem sedang sibuk. Mohon coba tanyakan lagi dalam beberapa detik.";
 }
 
 // --- Provider Implementations ---
