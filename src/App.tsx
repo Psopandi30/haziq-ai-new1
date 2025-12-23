@@ -376,47 +376,43 @@ const App: React.FC = () => {
   const renderLanding = () => (
     <>
       {/* Scrollable Content Area */}
-      <div className="flex-1 w-full max-w-4xl mx-auto px-6 overflow-y-auto pb-40 pt-10 h-full flex flex-col justify-center items-center relative z-10">
+      <div className="flex-1 w-full max-w-5xl mx-auto px-6 overflow-y-auto pb-52 pt-4 h-full flex flex-col justify-start items-center">
 
-        {/* Abstract Background Blur (Subtler) */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-64 h-64 bg-[#0f4c3a]/5 rounded-full blur-[80px] pointer-events-none"></div>
+        {/* Abstract Background Blur */}
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-[#0f4c3a]/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-emerald-400/10 rounded-full blur-[100px] pointer-events-none"></div>
 
         {/* Hero Text */}
-        <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <h1 className="text-3xl md:text-5xl font-bold text-slate-300 mb-2 tracking-tight">
-            Assalamualaikum,
-          </h1>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-[#0f4c3a] tracking-tight mb-4">
-            Saya Haziq AI.
-          </h1>
-          <p className="text-xl md:text-2xl text-slate-400 font-medium">
-            <span className="text-slate-600 font-semibold">{currentUser ? currentUser.name : 'Tamu'}</span>, apa yang bisa saya bantu?
+        <div className="text-center mb-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-semibold tracking-wide mb-4">
+            <Sparkles size={12} />
+            <span>Asisten Akademik Cerdas</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 tracking-tight leading-tight">
+            Apa yang bisa <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0f4c3a] to-emerald-500">Haziq</span> bantu?
+          </h2>
+          <p className="mt-3 text-slate-500 text-base max-w-xl mx-auto font-light">
+            Tanyakan seputar jurnal, tafsir, atau referensi akademik Institut Agama Islam Persis Garut.
           </p>
         </div>
 
-        {/* Quick Chips Grid */}
-        <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
-          {[
-            { label: 'Al Quran & Tafsir', query: 'Carikan tafsir Al-Quran tentang menuntut ilmu.' },
-            { label: 'Kumpulan Hadist', query: 'Carikan hadits shahih tentang kejujuran.' },
-            { label: 'Parafrase Teks', query: 'Bantu saya memparafrase kalimat berikut agar lebih akademik: ' },
-            { label: 'Langkah Menulis Jurnal', query: 'Jelaskan langkah-langkah menyusun jurnal ilmiah yang baik.' },
-            { label: 'Referensi Jurnal', query: 'Carikan referensi jurnal terbaru tentang ekonomi syariah.' },
-            { label: 'Ide Karya Tulis', query: 'Berikan 5 ide topik skripsi untuk jurusan Pendidikan Agama Islam.' }
-          ].map((action, idx) => (
+        {/* Quick Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
+          {QUICK_ACTIONS.map((action, idx) => (
             <button
               key={idx}
               onClick={() => handleSend(action.query)}
-              className="px-5 py-2.5 rounded-full border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:border-[#0f4c3a] hover:text-[#0f4c3a] hover:bg-emerald-50/30 transition-all duration-300 shadow-sm hover:shadow-md"
+              className="group relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left overflow-hidden"
             >
-              {action.label}
+              <div className="absolute right-0 top-0 w-24 h-24 bg-gradient-to-br from-emerald-50 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <h3 className="text-slate-800 font-semibold text-lg mb-1 relative z-10 group-hover:text-[#0f4c3a] transition-colors">{action.label}</h3>
+              <p className="text-slate-400 text-sm font-light line-clamp-2 relative z-10 group-hover:text-slate-500">{action.query}</p>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Fixed Bottom Input Bar */}
-
+      {/* Fixed Bottom Input Bar  */}
       <div className="fixed bottom-0 left-0 right-0 p-4 pb-6 flex justify-center z-50 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none">
         <div className="w-full max-w-3xl bg-white/90 backdrop-blur-xl border border-white/40 shadow-2xl shadow-slate-300/40 rounded-[2rem] p-2 pl-6 flex items-center gap-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-[#0f4c3a]/20 transition-all pointer-events-auto">
           <MessageSquare className="text-slate-400 w-6 h-6" />
@@ -442,67 +438,107 @@ const App: React.FC = () => {
   const renderChat = () => (
     <div className={`flex-1 w-full ${isLoggedIn ? 'max-w-4xl' : 'max-w-4xl'} mx-auto px-4 flex flex-col h-full relative`}>
       <div className="flex-1 overflow-y-auto no-scrollbar py-8 space-y-8 pb-32">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start items-start gap-3'}`}
-          >
-            {msg.role === 'model' && (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0f4c3a] to-emerald-600 flex items-center justify-center text-white text-xs font-serif font-bold shadow-sm shrink-0 mt-1">
-                Hz
-              </div>
-            )}
-            <div className={`flex flex-col gap-2 max-w-[85%] sm:max-w-[80%]`}>
-              <div
-                className={`px-6 py-4 shadow-sm w-full ${msg.role === 'user'
-                  ? 'bg-[#0f4c3a] text-white rounded-[2rem] rounded-br-sm'
-                  : 'bg-white border border-slate-100 text-slate-700 rounded-[2rem] rounded-tl-sm shadow-md'
-                  } ${msg.isError ? 'bg-red-50 text-red-600 border-red-100' : ''}`}
-              >
-                {msg.role === 'model' ? (
-                  <div className="prose prose-slate prose-p:leading-relaxed prose-headings:font-bold prose-headings:text-slate-800 prose-a:text-emerald-600 prose-strong:text-slate-900 max-w-none">
-                    <ReactMarkdown>{msg.text}</ReactMarkdown>
-                  </div>
-                ) : (
-                  <p className="text-base leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                )}
-              </div>
+        {messages.length === 0 ? (
+          /* --- EMPTY STATE: Show Personalized Welcome --- */
+          <div className="flex flex-col justify-center items-center h-full min-h-[50vh]">
+            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-64 h-64 bg-[#0f4c3a]/5 rounded-full blur-[80px] pointer-events-none"></div>
 
-              {/* Feedback Buttons for Model messages */}
-              {msg.role === 'model' && !msg.isError && (
-                <div className="flex items-center gap-2 px-2">
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(msg.text);
-                      alert("Teks disalin!");
-                    }}
-                    className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                    title="Salin"
-                  >
-                    <Copy size={16} />
-                  </button>
-                  <div className="h-3 w-px bg-slate-200 mx-1"></div>
-                  <button
-                    onClick={() => {
-                      setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: m.feedback === 'like' ? null : 'like' } : m));
-                    }}
-                    className={`p-1.5 rounded-lg transition-colors ${msg.feedback === 'like' ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50'}`}
-                  >
-                    <ThumbsUp size={16} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: m.feedback === 'dislike' ? null : 'dislike' } : m));
-                    }}
-                    className={`p-1.5 rounded-lg transition-colors ${msg.feedback === 'dislike' ? 'text-red-500 bg-red-50' : 'text-slate-400 hover:text-red-500 hover:bg-red-50'}`}
-                  >
-                    <ThumbsDown size={16} />
-                  </button>
-                </div>
-              )}
+            <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 relative z-10">
+              <h1 className="text-3xl md:text-5xl font-bold text-slate-300 mb-2 tracking-tight">
+                Assalamualaikum,
+              </h1>
+              <h1 className="text-3xl md:text-5xl font-extrabold text-[#0f4c3a] tracking-tight mb-4">
+                Saya Haziq AI.
+              </h1>
+              <p className="text-xl md:text-2xl text-slate-400 font-medium">
+                <span className="text-slate-600 font-semibold">{currentUser ? currentUser.name : 'Tamu'}</span>, apa yang bisa saya bantu?
+              </p>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 relative z-10">
+              {[
+                { label: 'Al Quran & Tafsir', query: 'Carikan tafsir Al-Quran tentang menuntut ilmu.' },
+                { label: 'Kumpulan Hadist', query: 'Carikan hadits shahih tentang kejujuran.' },
+                { label: 'Parafrase Teks', query: 'Bantu saya memparafrase kalimat berikut agar lebih akademik: ' },
+                { label: 'Langkah Menulis Jurnal', query: 'Jelaskan langkah-langkah menyusun jurnal ilmiah yang baik.' },
+                { label: 'Referensi Jurnal', query: 'Carikan referensi jurnal terbaru tentang ekonomi syariah.' },
+                { label: 'Ide Karya Tulis', query: 'Berikan 5 ide topik skripsi untuk jurusan Pendidikan Agama Islam.' }
+              ].map((action, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSend(action.query)}
+                  className="px-5 py-2.5 rounded-full border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:border-[#0f4c3a] hover:text-[#0f4c3a] hover:bg-emerald-50/30 transition-all duration-300 shadow-sm hover:shadow-md"
+                >
+                  {action.label}
+                </button>
+              ))}
             </div>
           </div>
-        ))}
+        ) : (
+          /* --- CHAT HISTORY --- */
+          messages.map((msg, index) => (
+
+            <div
+              key={index}
+              className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start items-start gap-3'}`}
+            >
+              {msg.role === 'model' && (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0f4c3a] to-emerald-600 flex items-center justify-center text-white text-xs font-serif font-bold shadow-sm shrink-0 mt-1">
+                  Hz
+                </div>
+              )}
+              <div className={`flex flex-col gap-2 max-w-[85%] sm:max-w-[80%]`}>
+                <div
+                  className={`px-6 py-4 shadow-sm w-full ${msg.role === 'user'
+                    ? 'bg-[#0f4c3a] text-white rounded-[2rem] rounded-br-sm'
+                    : 'bg-white border border-slate-100 text-slate-700 rounded-[2rem] rounded-tl-sm shadow-md'
+                    } ${msg.isError ? 'bg-red-50 text-red-600 border-red-100' : ''}`}
+                >
+                  {msg.role === 'model' ? (
+                    <div className="prose prose-slate prose-p:leading-relaxed prose-headings:font-bold prose-headings:text-slate-800 prose-a:text-emerald-600 prose-strong:text-slate-900 max-w-none">
+                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="text-base leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                  )}
+                </div>
+
+                {/* Feedback Buttons for Model messages */}
+                {msg.role === 'model' && !msg.isError && (
+                  <div className="flex items-center gap-2 px-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(msg.text);
+                        alert("Teks disalin!");
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                      title="Salin"
+                    >
+                      <Copy size={16} />
+                    </button>
+                    <div className="h-3 w-px bg-slate-200 mx-1"></div>
+                    <button
+                      onClick={() => {
+                        setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: m.feedback === 'like' ? null : 'like' } : m));
+                      }}
+                      className={`p-1.5 rounded-lg transition-colors ${msg.feedback === 'like' ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50'}`}
+                    >
+                      <ThumbsUp size={16} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: m.feedback === 'dislike' ? null : 'dislike' } : m));
+                      }}
+                      className={`p-1.5 rounded-lg transition-colors ${msg.feedback === 'dislike' ? 'text-red-500 bg-red-50' : 'text-slate-400 hover:text-red-500 hover:bg-red-50'}`}
+                    >
+                      <ThumbsDown size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        )}
         {
           isLoading && (
             <div className="flex w-full justify-start items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
