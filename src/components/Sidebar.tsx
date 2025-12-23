@@ -64,13 +64,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    // Reset time to midnight for accurate calendar day comparison
+    const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const diffTime = todayDate.getTime() - targetDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) return 'Hari ini';
     if (diffDays === 1) return 'Kemarin';
     if (diffDays < 7) return `${diffDays} hari lalu`;
-    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   const handleDeleteAll = async () => {
