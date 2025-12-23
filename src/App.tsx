@@ -438,7 +438,7 @@ const App: React.FC = () => {
   const renderChat = () => (
     <div className={`flex-1 w-full ${isLoggedIn ? 'max-w-4xl' : 'max-w-4xl'} mx-auto px-4 flex flex-col h-full relative`}>
       <div className="flex-1 overflow-y-auto no-scrollbar py-8 space-y-8 pb-32">
-        {messages.length === 0 ? (
+        {(!messages || !Array.isArray(messages) || messages.length === 0) ? (
           /* --- EMPTY STATE: Show Personalized Welcome --- */
           <div className="w-full h-full flex flex-col items-center justify-start pt-10 px-4 text-center">
 
