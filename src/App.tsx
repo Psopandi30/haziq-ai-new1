@@ -440,21 +440,21 @@ const App: React.FC = () => {
       <div className="flex-1 overflow-y-auto no-scrollbar py-8 space-y-8 pb-32">
         {messages.length === 0 ? (
           /* --- EMPTY STATE: Show Personalized Welcome --- */
-          <div className="w-full px-6 pt-20 pb-10 text-center">
+          <div className="w-full h-full flex flex-col items-center justify-start pt-10 px-4 text-center">
 
-            <div className="mb-8">
-              <h1 className="text-3xl md:text-5xl font-bold text-slate-300 mb-2">
+            <div className="mb-10 mt-10">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-400 mb-2">
                 Assalamualaikum,
               </h1>
-              <h1 className="text-3xl md:text-5xl font-extrabold text-[#0f4c3a] mb-4">
+              <h1 className="text-4xl md:text-5xl font-extrabold text-[#0f4c3a] mb-6">
                 Saya Haziq AI.
               </h1>
-              <p className="text-lg md:text-xl text-slate-500 font-medium max-w-lg mx-auto">
-                <span className="text-slate-800 font-bold">{currentUser ? currentUser.name : 'Tamu'}</span>, ada yang bisa saya bantu hari ini?
+              <p className="text-lg md:text-xl text-gray-600 font-medium max-w-2xl mx-auto">
+                <span className="text-gray-900 font-bold">{currentUser ? currentUser.name : 'Tamu'}</span>, ada yang bisa saya bantu hari ini?
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto w-full">
               {[
                 { label: 'Al Quran & Tafsir', query: 'Carikan tafsir Al-Quran tentang menuntut ilmu.' },
                 { label: 'Kumpulan Hadist', query: 'Carikan hadits shahih tentang kejujuran.' },
@@ -466,7 +466,7 @@ const App: React.FC = () => {
                 <button
                   key={idx}
                   onClick={() => handleSend(action.query)}
-                  className="p-4 rounded-2xl border border-slate-200 bg-white text-slate-600 text-sm font-semibold hover:border-[#0f4c3a] hover:text-[#0f4c3a] hover:bg-emerald-50 transition-all shadow-sm text-left"
+                  className="p-5 rounded-2xl border border-slate-200 bg-white text-slate-800 text-sm font-semibold hover:border-[#0f4c3a] hover:text-[#0f4c3a] hover:bg-emerald-50 hover:shadow-md transition-all text-left"
                 >
                   {action.label}
                 </button>
