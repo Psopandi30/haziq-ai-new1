@@ -440,22 +440,23 @@ const App: React.FC = () => {
       <div className="flex-1 overflow-y-auto no-scrollbar py-8 space-y-8 pb-32">
         {messages.length === 0 ? (
           /* --- EMPTY STATE: Show Personalized Welcome --- */
-          <div className="flex flex-col justify-center items-center h-full min-h-[50vh]">
-            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-64 h-64 bg-[#0f4c3a]/5 rounded-full blur-[80px] pointer-events-none"></div>
+          <div className="flex flex-col justify-center items-center w-full min-h-[60vh] relative">
+            {/* Background Blur */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none z-0"></div>
 
-            <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 relative z-10">
-              <h1 className="text-3xl md:text-5xl font-bold text-slate-300 mb-2 tracking-tight">
+            <div className="text-center mb-10 relative z-10">
+              <h1 className="text-3xl md:text-5xl font-bold text-slate-400 mb-2">
                 Assalamualaikum,
               </h1>
-              <h1 className="text-3xl md:text-5xl font-extrabold text-[#0f4c3a] tracking-tight mb-4">
+              <h1 className="text-3xl md:text-5xl font-extrabold text-[#0f4c3a] mb-4">
                 Saya Haziq AI.
               </h1>
-              <p className="text-xl md:text-2xl text-slate-400 font-medium">
-                <span className="text-slate-600 font-semibold">{currentUser ? currentUser.name : 'Tamu'}</span>, apa yang bisa saya bantu?
+              <p className="text-lg md:text-xl text-slate-500 font-medium max-w-lg mx-auto">
+                <span className="text-slate-700 font-bold">{currentUser ? currentUser.name : 'Tamu'}</span>, ada yang bisa saya bantu hari ini?
               </p>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 relative z-10">
+            <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto relative z-10 w-full px-4">
               {[
                 { label: 'Al Quran & Tafsir', query: 'Carikan tafsir Al-Quran tentang menuntut ilmu.' },
                 { label: 'Kumpulan Hadist', query: 'Carikan hadits shahih tentang kejujuran.' },
@@ -467,7 +468,7 @@ const App: React.FC = () => {
                 <button
                   key={idx}
                   onClick={() => handleSend(action.query)}
-                  className="px-5 py-2.5 rounded-full border border-slate-200 bg-white text-slate-600 text-sm font-medium hover:border-[#0f4c3a] hover:text-[#0f4c3a] hover:bg-emerald-50/30 transition-all duration-300 shadow-sm hover:shadow-md"
+                  className="px-6 py-3 rounded-full border border-slate-200 bg-white/80 backdrop-blur-sm text-slate-600 text-sm font-semibold hover:border-[#0f4c3a] hover:text-[#0f4c3a] hover:bg-emerald-50 hover:-translate-y-0.5 transition-all duration-200 shadow-sm"
                 >
                   {action.label}
                 </button>
