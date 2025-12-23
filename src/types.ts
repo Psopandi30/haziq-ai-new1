@@ -26,6 +26,7 @@ export interface AppConfig {
   description: string;
   downloadLink: string;
   webhookUrl: string;
+  geminiApiKeys?: string; // Comma separated keys
 }
 
 export interface ChatSession {

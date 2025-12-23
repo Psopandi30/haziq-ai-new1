@@ -33,6 +33,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
     const [localDesc, setLocalDesc] = useState(appConfig.description);
     const [localLink, setLocalLink] = useState(appConfig.downloadLink);
     const [localWebhook, setLocalWebhook] = useState(appConfig.webhookUrl);
+    const [localApiKeys, setLocalApiKeys] = useState(appConfig.geminiApiKeys || ''); // New State
     const [searchQuery, setSearchQuery] = useState('');
 
     // Initial fetch on mount
@@ -41,6 +42,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
         setLocalDesc(appConfig.description);
         setLocalLink(appConfig.downloadLink);
         setLocalWebhook(appConfig.webhookUrl);
+        setLocalApiKeys(appConfig.geminiApiKeys || ''); // Sync State
     }, [appConfig]);
 
     const fetchUsers = async () => {
@@ -195,7 +197,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
                 id: 1,
                 description: appConfig.description,
                 download_link: appConfig.downloadLink,
-                webhook_url: localWebhook
+                webhook_url: localWebhook,
+                gemini_api_keys: localApiKeys // Save Keys
             });
 
             if (error) throw error;
@@ -204,9 +207,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
             setAppConfig({
                 description: appConfig.description,
                 downloadLink: appConfig.downloadLink,
-                webhookUrl: localWebhook
+                webhookUrl: localWebhook,
+                geminiApiKeys: localApiKeys // Update State
             });
-            alert("Webhook N8N berhasil diperbarui!");
+            alert("Konfigurasi API berhasil diperbarui!");
         } catch (err) {
             console.error("Error saving webhook:", err);
             alert("Gagal menyimpan webhook.");
@@ -504,8 +508,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
                                     className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white py-3 px-8 rounded-xl font-bold shadow-lg shadow-amber-500/30 transition-all active:scale-95 flex items-center gap-2"
                                 >
                                     <Save size={18} />
-                                    Simpan Webhook
+                                    Simpan Integrasi AI
                                 </button>
+                            </div>
+                        </div>
+
+                        {/* API Keys Configuration Card (New) */}
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-sm border-2 border-blue-200 space-y-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                                    <Sparkles size={20} className="text-blue-700" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-slate-800">API Keys (Direct Mode)</h3>
+                                    <p className="text-sm text-blue-700 font-medium">Opsional: Masukkan beberapa API key untuk rotasi.</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-slate-700 font-semibold mb-3">Google Gemini API Keys (Comma Separated)</label>
+                                <textarea
+                                    value={localApiKeys}
+                                    onChange={(e) => setLocalApiKeys(e.target.value)}
+                                    placeholder="AIzaSy..., AIzaSy..., AIzaSy..."
+                                    className="w-full h-32 bg-white border-2 border-blue-200 rounded-xl p-4 text-slate-700 font-mono text-sm focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all outline-none resize-none"
+                                />
+                                <p className="text-xs text-slate-600 mt-2 flex items-start gap-2">
+                                    <span className="text-blue-600 font-bold">ℹ️</span>
+                                    <span>Jika diisi, aplikasi akan menggunakan API Keys ini secara bergantian (rotasi) dan MENGABAIKAN Webhook N8N. Kosongkan jika ingin tetap menggunakan N8N.</span>
+                                </p>
                             </div>
                         </div>
 

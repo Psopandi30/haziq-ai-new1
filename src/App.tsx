@@ -37,7 +37,8 @@ const App: React.FC = () => {
   const [appConfig, setAppConfig] = useState<AppConfig>({
     description: 'Haziq AI adalah asisten cerdas yang dirancang khusus untuk mahasiswa Institut Agama Islam Persis Garut. Aplikasi ini membantu dalam penyusunan jurnal, pencarian referensi akademik, serta studi Al-Quran dan Hadits.',
     downloadLink: '#',
-    webhookUrl: 'https://n8n.wasm123.com/webhook/f0a5c9e9-3c4d-4e3a-8f7b-2d1e6a9c4b8f'
+    webhookUrl: import.meta.env.VITE_WEBHOOK_URL || '',
+    geminiApiKeys: import.meta.env.VITE_GEMINI_API_KEYS || ''
   });
 
   // Load config from Supabase
@@ -53,7 +54,8 @@ const App: React.FC = () => {
           setAppConfig({
             description: data.description,
             downloadLink: data.download_link,
-            webhookUrl: data.webhook_url
+            webhookUrl: data.webhook_url,
+            geminiApiKeys: data.gemini_api_keys // Load keys
           });
         }
       } catch (err) {
@@ -137,7 +139,7 @@ const App: React.FC = () => {
         parts: [{ text: msg.text }]
       }));
 
-      const response = await sendMessageToGemini(text.trim(), appConfig.webhookUrl, currentUser, historyContext);
+      const response = await sendMessageToGemini(text.trim(), appConfig.webhookUrl, appConfig.geminiApiKeys, currentUser, historyContext);
       const aiMessage: Message = { role: 'model', text: response };
       const finalMessages = [...updatedMessages, aiMessage];
       setMessages(finalMessages);
