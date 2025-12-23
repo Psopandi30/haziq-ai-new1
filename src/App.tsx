@@ -140,13 +140,49 @@ const App: React.FC = () => {
       }));
 
       const response = await sendMessageToGemini(text.trim(), appConfig.webhookUrl, appConfig.geminiApiKeys, currentUser, historyContext);
-      const aiMessage: Message = { role: 'model', text: response };
-      const finalMessages = [...updatedMessages, aiMessage];
-      setMessages(finalMessages);
-      setIsLoading(false); // Set false here immediately if success
 
-      // Auto-save after AI response
-      await saveChatSession(finalMessages);
+      setIsLoading(false); // Stop loading animation
+
+      // Start simulated typing effect
+      // 1. Add empty model message first
+      setMessages(prev => [...prev, { role: 'model', text: '' }]);
+
+      let i = 0;
+      const speed = 10; // ms per chunk
+      const chunkSize = 3; // chars per chunk
+
+      const typingInterval = setInterval(() => {
+        if (i >= response.length) {
+          clearInterval(typingInterval);
+          // Ensure exact text match at the end
+          setMessages(prev => {
+            const newMsgs = [...prev];
+            const lastMsgIdx = newMsgs.length - 1;
+            if (lastMsgIdx >= 0) {
+              newMsgs[lastMsgIdx] = { ...newMsgs[lastMsgIdx], text: response };
+            }
+            return newMsgs;
+          });
+
+          // Save complete session to DB
+          const finalMessages = [...updatedMessages, { role: 'model', text: response } as Message];
+          saveChatSession(finalMessages);
+          return;
+        }
+
+        const nextChunk = response.slice(i, i + chunkSize);
+        i += chunkSize;
+
+        setMessages(prev => {
+          const newMsgs = [...prev];
+          const lastIdx = newMsgs.length - 1;
+          if (lastIdx >= 0 && newMsgs[lastIdx].role === 'model') {
+            newMsgs[lastIdx] = { ...newMsgs[lastIdx], text: newMsgs[lastIdx].text + nextChunk };
+          }
+          return newMsgs;
+        });
+      }, speed);
+
     } catch (error) {
       setIsLoading(false);
       const errorMessage: Message = {
