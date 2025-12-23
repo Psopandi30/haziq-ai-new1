@@ -536,7 +536,7 @@ const App: React.FC = () => {
                 )}
               </div>
             </div>
-          ))}
+          ))
         )}
         {
           isLoading && (
