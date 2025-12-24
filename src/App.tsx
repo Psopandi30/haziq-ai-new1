@@ -134,7 +134,7 @@ const App: React.FC = () => {
     try {
       // Format history for API
       // Only take last 10 messages to avoid payload getting too large
-      const historyContext = updatedMessages.slice(-10).map(msg => ({
+      const historyContext = messages.slice(-10).map(msg => ({
         role: msg.role === 'user' ? 'user' : 'model',
         parts: [{ text: msg.text }]
       }));
