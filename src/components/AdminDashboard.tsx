@@ -517,7 +517,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, users,
                         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-sm border-2 border-blue-200 space-y-6">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                                    <Sparkles size={20} className="text-blue-700" />
+                                    <FileEdit size={20} className="text-blue-700" />
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold text-slate-800">API Keys (Direct Mode)</h3>
