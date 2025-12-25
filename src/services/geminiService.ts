@@ -107,22 +107,40 @@ async function sendToGeminiDirectRotated(
 // --- Provider Implementations ---
 
 async function callGoogleGemini(apiKey: string, contents: any[]) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents })
-  });
+  // UPDATED: Try fallback models if specific version is not found (404)
+  const models = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-pro"];
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Gemini API Error (${response.status}): ${errorText}`);
+  let lastError = null;
+
+  for (const model of models) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents })
+      });
+
+      if (!response.ok) {
+        // If 404 (Model not found), continue to try next model
+        if (response.status === 404) {
+          console.warn(`Model ${model} not found, retrying...`);
+          continue;
+        }
+        const errorText = await response.text();
+        throw new Error(`Gemini API Error (${response.status}): ${errorText}`);
+      }
+
+      const data = await response.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (text) return text;
+    } catch (e: any) {
+      lastError = e;
+      // Throw immediately to let Key Rotation handle it (unless it was a handled 404 loop which wouldn't be here)
+      throw e;
+    }
   }
-
-  const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (text) return text;
-  throw new Error('No text in Gemini response');
+  throw lastError || new Error('No compatible Gemini model found');
 }
 
 async function callHuggingFace(apiKey: string, messages: any[]) {
