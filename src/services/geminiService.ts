@@ -20,7 +20,11 @@ export const sendMessageToGemini = async (
     // We strictly use keys passed from configuration or env vars
     // UPDATED: Added multiple backup keys to resolve Rate Limit issues
     // UPDATED: Added DeepSeek key
-    const hardcodedKeys = "AIzaSyCCO-rUujlkWWhNKxOL7dWRO8UJj_amcC8,AIzaSyDvZA3qq0ifUc-eZpDtI1cS1X6fPB110wk,AIzaSyA7ylI7vt5AOENYZNQmxC2wCurTnUNkTEg,AIzaSyB0UpOd0gCbUsJ1LRGXRaNfOReAlO0Q6zw,AIzaSyA74ZyjeaNykKPx4uUhEyfl0CDwr6FC9So,AIzaSyAZjiomCv0Ziiz1RNJTgHSD0G6s5EY-Pus,AIzaSyDmyO66ocnUOJctvjtuIJuKVIR-xqn7ONI,AIzaSyDAmk4ihMlfTCoZRRurKCZ_AA8DArQWIDs,sk-2272ab34aee443808548aeba9eb59408";
+    const predefinedKeys = "AIzaSyCCO-rUujlkWWhNKxOL7dWRO8UJj_amcC8,AIzaSyDvZA3qq0ifUc-eZpDtI1cS1X6fPB110wk,AIzaSyA7ylI7vt5AOENYZNQmxC2wCurTnUNkTEg,AIzaSyB0UpOd0gCbUsJ1LRGXRaNfOReAlO0Q6zw,AIzaSyA74ZyjeaNykKPx4uUhEyfl0CDwr6FC9So,AIzaSyAZjiomCv0Ziiz1RNJTgHSD0G6s5EY-Pus,AIzaSyDmyO66ocnUOJctvjtuIJuKVIR-xqn7ONI,AIzaSyDAmk4ihMlfTCoZRRurKCZ_AA8DArQWIDs,sk-2272ab34aee443808548aeba9eb59408";
+
+    // Combine predefined keys with Vercel/Env keys
+    const envKeys = import.meta.env.VITE_GEMINI_API_KEYS || "";
+    const hardcodedKeys = predefinedKeys + (envKeys ? "," + envKeys : "");
 
     // Combine newly provided keys with any existing configuration to ensure we always have valid keys
     const keysToUse = hardcodedKeys + (apiKeys ? "," + apiKeys : "");
