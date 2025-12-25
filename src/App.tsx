@@ -129,7 +129,8 @@ const App: React.FC = () => {
     setMessages(updatedMessages);
     setInputText('');
     setHasStarted(true);
-    setInputText('');
+    setIsLoading(true); // START LOADING
+
 
     try {
       // Format history for API
