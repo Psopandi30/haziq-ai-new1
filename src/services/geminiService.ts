@@ -19,7 +19,8 @@ export const sendMessageToGemini = async (
   try {
     // We strictly use keys passed from configuration or env vars
     // UPDATED: Added multiple backup keys to resolve Rate Limit issues
-    const hardcodedKeys = "AIzaSyCCO-rUujlkWWhNKxOL7dWRO8UJj_amcC8,AIzaSyDvZA3qq0ifUc-eZpDtI1cS1X6fPB110wk,AIzaSyA7ylI7vt5AOENYZNQmxC2wCurTnUNkTEg,AIzaSyB0UpOd0gCbUsJ1LRGXRaNfOReAlO0Q6zw,AIzaSyA74ZyjeaNykKPx4uUhEyfl0CDwr6FC9So,AIzaSyAZjiomCv0Ziiz1RNJTgHSD0G6s5EY-Pus,AIzaSyDmyO66ocnUOJctvjtuIJuKVIR-xqn7ONI,AIzaSyDAmk4ihMlfTCoZRRurKCZ_AA8DArQWIDs";
+    // UPDATED: Added DeepSeek key
+    const hardcodedKeys = "AIzaSyCCO-rUujlkWWhNKxOL7dWRO8UJj_amcC8,AIzaSyDvZA3qq0ifUc-eZpDtI1cS1X6fPB110wk,AIzaSyA7ylI7vt5AOENYZNQmxC2wCurTnUNkTEg,AIzaSyB0UpOd0gCbUsJ1LRGXRaNfOReAlO0Q6zw,AIzaSyA74ZyjeaNykKPx4uUhEyfl0CDwr6FC9So,AIzaSyAZjiomCv0Ziiz1RNJTgHSD0G6s5EY-Pus,AIzaSyDmyO66ocnUOJctvjtuIJuKVIR-xqn7ONI,AIzaSyDAmk4ihMlfTCoZRRurKCZ_AA8DArQWIDs,sk-2272ab34aee443808548aeba9eb59408";
 
     // Combine newly provided keys with any existing configuration to ensure we always have valid keys
     const keysToUse = hardcodedKeys + (apiKeys ? "," + apiKeys : "");
@@ -86,6 +87,9 @@ async function sendToGeminiDirectRotated(
         return await callGroq(apiKey, historyGeneric);
       } else if (apiKey.startsWith('sk-or-')) {
         return await callOpenRouter(apiKey, historyGeneric);
+      } else if (apiKey.startsWith('sk-')) {
+        // Assume DeepSeek (or generic OpenAI compatible) for other sk- keys
+        return await callDeepSeek(apiKey, historyGeneric);
       } else {
         console.warn(`Unknown key format: ${apiKey.slice(0, 5)}...`);
         continue;
@@ -220,6 +224,30 @@ async function callOpenRouter(apiKey: string, messages: any[]) {
   if (!response.ok) {
     const err = await response.text();
     throw new Error(`OpenRouter Error: ${err}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+
+// DeepSeek Implementation
+async function callDeepSeek(apiKey: string, messages: any[]) {
+  const url = 'https://api.deepseek.com/chat/completions';
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      messages: messages,
+      model: "deepseek-chat"
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`DeepSeek Error: ${err}`);
   }
 
   const data = await response.json();
