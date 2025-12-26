@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowUp, Loader2, Sparkles, MessageSquare, Copy, ThumbsUp, ThumbsDown, Check, Mic } from 'lucide-react';
+import { Send, ArrowUp, Loader2, Sparkles, MessageSquare, Copy, ThumbsUp, ThumbsDown, Check, Mic, Volume2 } from 'lucide-react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { LoginModal } from './components/LoginModal';
@@ -90,6 +90,18 @@ const App: React.FC = () => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSpeak = (text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel(); // Stop previous
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'id-ID'; // Indonesia
+      utterance.rate = 1.0; // Normal speed
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Browser anda tidak mendukung fitur ini.");
+    }
   };
 
   // Save chat session to database
@@ -543,6 +555,15 @@ const App: React.FC = () => {
                     >
                       <Copy size={16} />
                     </button>
+
+                    <button
+                      onClick={() => handleSpeak(msg.text)}
+                      className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                      title="Dengarkan Suara (Speaker)"
+                    >
+                      <Volume2 size={16} />
+                    </button>
+
                     <div className="h-3 w-px bg-slate-200 mx-1"></div>
                     <button
                       onClick={() => {
