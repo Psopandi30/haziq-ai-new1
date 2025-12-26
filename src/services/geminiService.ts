@@ -1,5 +1,6 @@
 import { UserData } from '../types';
 import { enrichPromptWithQuran } from './quranService';
+import { enrichPromptWithHadith } from './hadithService';
 
 /**
  * Sends a message to the n8n Webhook.
@@ -18,8 +19,9 @@ export const sendMessageToGemini = async (
   history: { role: string; parts: { text: string }[] }[] = []
 ): Promise<string> => {
   try {
-    // Check if user is asking for Quran verse and fetch real data
-    const finalPrompt = await enrichPromptWithQuran(prompt);
+    // Check if user is asking for Quran verse or Hadith and fetch real data
+    let finalPrompt = await enrichPromptWithQuran(prompt);
+    finalPrompt = await enrichPromptWithHadith(finalPrompt);
 
     // We strictly use keys passed from configuration or env vars
     // UPDATED: Added multiple backup keys to resolve Rate Limit issues
