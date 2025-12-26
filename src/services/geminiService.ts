@@ -1,4 +1,5 @@
 import { UserData } from '../types';
+import { enrichPromptWithQuran } from './quranService';
 
 /**
  * Sends a message to the n8n Webhook.
@@ -17,6 +18,9 @@ export const sendMessageToGemini = async (
   history: { role: string; parts: { text: string }[] }[] = []
 ): Promise<string> => {
   try {
+    // Check if user is asking for Quran verse and fetch real data
+    const finalPrompt = await enrichPromptWithQuran(prompt);
+
     // We strictly use keys passed from configuration or env vars
     // UPDATED: Added multiple backup keys to resolve Rate Limit issues
     // UPDATED: Added DeepSeek key
@@ -35,7 +39,7 @@ export const sendMessageToGemini = async (
     }
 
     try {
-      return await sendToGeminiDirectRotated(keys, prompt, history);
+      return await sendToGeminiDirectRotated(keys, finalPrompt, history);
     } catch (directError: any) {
       console.error("Direct API failed:", directError);
       return `Gagal menghubungkan ke layanan AI: ${directError.message}`;
