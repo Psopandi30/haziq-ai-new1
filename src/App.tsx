@@ -29,6 +29,8 @@ const App: React.FC = () => {
 
   // --- Speech Recognition Logic ---
   const [isListening, setIsListening] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const toggleListening = () => {
     if (isListening) {
