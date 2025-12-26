@@ -87,7 +87,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLogin, onRegi
             <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-[#0f4c3a] transition-colors" />
             <input
               type="text"
-              placeholder="NIM / NID / NIDN"
+              placeholder="Username"
               value={nim}
               onChange={(e) => setNim(e.target.value)}
               required
