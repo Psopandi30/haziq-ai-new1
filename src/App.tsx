@@ -13,6 +13,7 @@ import { sendMessageToGemini } from './services/geminiService';
 import { Message, QuickAction, UserData, AppConfig } from './types';
 import { supabase } from './services/supabaseClient';
 import ReactMarkdown from 'react-markdown';
+import { useVoiceTyping } from './hooks/useVoiceTyping';
 
 const QUICK_ACTIONS: QuickAction[] = [
   { label: 'Jurnal Akademik', query: 'Jelaskan panduan lengkap cara penyusunan jurnal akademik yang baik dan benar.' },
@@ -27,45 +28,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
 
-  // --- Speech Recognition Logic ---
-  const [isListening, setIsListening] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
 
-  const toggleListening = () => {
-    if (isListening) {
-      setIsListening(false);
-      return;
-    }
-
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert("Browser anda tidak mendukung fitur Voice Typing. Gunakan Chrome di Android/PC.");
-      return;
-    }
-
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-
-    recognition.lang = 'id-ID';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setInputText(prev => prev + (prev ? ' ' : '') + transcript);
-    };
-
-    recognition.onerror = (event: any) => {
-      console.error("Speech recognition error", event.error);
-      setIsListening(false);
-    };
-
-    recognition.start();
-  };
-  // --------------------------------
 
   // Data State
   // Data State - Fetched from Supabase now
@@ -80,6 +43,13 @@ const App: React.FC = () => {
     webhookUrl: import.meta.env.VITE_WEBHOOK_URL || '',
     geminiApiKeys: import.meta.env.VITE_GEMINI_API_KEYS || ''
   });
+
+  // --- Voice Service Logic ---
+  const { isListening, toggleListening, isLoading: isVoiceLoading } = useVoiceTyping(
+    (text) => setInputText(prev => prev + (prev ? ' ' : '') + text),
+    appConfig.geminiApiKeys || import.meta.env.VITE_GEMINI_API_KEYS || ""
+  );
+  // ---------------------------
 
   // Load config from Supabase
   useEffect(() => {
