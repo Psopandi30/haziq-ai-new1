@@ -9,7 +9,7 @@ import { DownloadApk } from './components/DownloadApk';
 import { AdminLogin } from './components/AdminLogin';
 import { AdminDashboard } from './components/AdminDashboard';
 import { InstallPrompt } from './components/InstallPrompt';
-import { sendMessageToGemini } from './services/geminiService';
+import { sendMessageToGemini, predefinedKeys } from './services/geminiService';
 import { Message, QuickAction, UserData, AppConfig } from './types';
 import { supabase } from './services/supabaseClient';
 import ReactMarkdown from 'react-markdown';
@@ -47,7 +47,7 @@ const App: React.FC = () => {
   // --- Voice Service Logic ---
   const { isListening, toggleListening, isLoading: isVoiceLoading } = useVoiceTyping(
     (text) => setInputText(prev => prev + (prev ? ' ' : '') + text),
-    appConfig.geminiApiKeys || import.meta.env.VITE_GEMINI_API_KEYS || ""
+    appConfig.geminiApiKeys || import.meta.env.VITE_GEMINI_API_KEYS || predefinedKeys || ""
   );
   // ---------------------------
 

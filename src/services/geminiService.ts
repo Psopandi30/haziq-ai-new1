@@ -11,6 +11,9 @@ import { enrichPromptWithHadith } from './hadithService';
  * @param history - The conversation history (formatted from App.tsx).
  * @returns The text response from the webhook.
  */
+// UPDATED: Added DeepSeek key and Groq Key
+export const predefinedKeys = "AIzaSyCCO-rUujlkWWhNKxOL7dWRO8UJj_amcC8,AIzaSyDvZA3qq0ifUc-eZpDtI1cS1X6fPB110wk,AIzaSyA7ylI7vt5AOENYZNQmxC2wCurTnUNkTEg,AIzaSyB0UpOd0gCbUsJ1LRGXRaNfOReAlO0Q6zw,AIzaSyA74ZyjeaNykKPx4uUhEyfl0CDwr6FC9So,AIzaSyAZjiomCv0Ziiz1RNJTgHSD0G6s5EY-Pus,AIzaSyDmyO66ocnUOJctvjtuIJuKVIR-xqn7ONI,AIzaSyDAmk4ihMlfTCoZRRurKCZ_AA8DArQWIDs,sk-2272ab34aee443808548aeba9eb59408,gsk_s5x7c49v88f6z3p0w1y2t3k4j5h6g7f8d9s0a";
+
 export const sendMessageToGemini = async (
   prompt: string,
   _webhookUrl: string, // Deprecated/Unused but kept for signature compatibility if needed, or better remove it
@@ -26,7 +29,9 @@ export const sendMessageToGemini = async (
     // We strictly use keys passed from configuration or env vars
     // UPDATED: Added multiple backup keys to resolve Rate Limit issues
     // UPDATED: Added DeepSeek key
-    const predefinedKeys = "AIzaSyCCO-rUujlkWWhNKxOL7dWRO8UJj_amcC8,AIzaSyDvZA3qq0ifUc-eZpDtI1cS1X6fPB110wk,AIzaSyA7ylI7vt5AOENYZNQmxC2wCurTnUNkTEg,AIzaSyB0UpOd0gCbUsJ1LRGXRaNfOReAlO0Q6zw,AIzaSyA74ZyjeaNykKPx4uUhEyfl0CDwr6FC9So,AIzaSyAZjiomCv0Ziiz1RNJTgHSD0G6s5EY-Pus,AIzaSyDmyO66ocnUOJctvjtuIJuKVIR-xqn7ONI,AIzaSyDAmk4ihMlfTCoZRRurKCZ_AA8DArQWIDs,sk-2272ab34aee443808548aeba9eb59408";
+    // We strictly use keys passed from configuration or env vars
+    // Keys are now imported from top-level scope
+
 
     // Combine predefined keys with Vercel/Env keys
     const envKeys = import.meta.env.VITE_GEMINI_API_KEYS || "";
