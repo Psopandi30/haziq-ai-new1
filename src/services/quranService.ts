@@ -187,7 +187,13 @@ Berikut adalah data valid dari Database Al-Quran Kemenag/Cloud untuk Surah ke-${
 Teks Arab: ${arabicText}
 Terjemahan: "${translation}"
 
-INSTRUKSI: Gunakan teks Arab dan Terjemahan di atas secara persis dalam jawabanmu. Jangan mengubah satu huruf pun dari teks Arab tersebut.
+INSTRUKSI TAMPILAN:
+1. Tampilkan Teks Arab tersebut menggunakan format **Heading 3 Markdown (###)** agar terlihat besar, jelas, dan indah.
+2. Tampilkan Terjemahannya di bawahnya (italic).
+3. [FITUR PREMIUM]: Wajib buatkan **Tabel Terjemahan Perkata (Mufradat)** di bawahnya.
+   - Format Tabel: | Lafadz (Arab) | Bacaan (Latin) | Arti |
+   - Pecah ayat tersebut menjadi kata-kata kunci untuk memudahkan belajar.
+4. Jika ada hukum tajwid yang menonjol, jelaskan poin-poinnya secara singkat.
 \n`;
             return prompt + additionalContext;
         }
