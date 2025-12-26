@@ -187,13 +187,13 @@ Berikut adalah data valid dari Database Al-Quran Kemenag/Cloud untuk Surah ke-${
 Teks Arab: ${arabicText}
 Terjemahan: "${translation}"
 
-INSTRUKSI TAMPILAN:
-1. Tampilkan Teks Arab tersebut menggunakan format **Heading 3 Markdown (###)** agar terlihat besar, jelas, dan indah.
-2. Tampilkan Terjemahannya di bawahnya (italic).
-3. [FITUR PREMIUM]: Wajib buatkan **Tabel Terjemahan Perkata (Mufradat)** di bawahnya.
-   - Format Tabel: | Lafadz (Arab) | Bacaan (Latin) | Arti |
-   - Pecah ayat tersebut menjadi kata-kata kunci untuk memudahkan belajar.
-4. Jika ada hukum tajwid yang menonjol, jelaskan poin-poinnya secara singkat.
+INSTRUKSI TAMPILAN (DILARANG MENULIS DALAM SATU PARAGRAF):
+1. [WAJIB] Tulis Setiap Ayat Arab menggunakan format **Heading 3 (###)**.
+   Contoh: ### بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+2. [WAJIB] Berikan **Jarak Baris (Enter 2x)** setelah teks Arab sebelum menulis Terjemahan.
+3. Terjemahan harus ditulis *Miring (Italic)*.
+4. [WAJIB] Buatkan **Tabel Mufradat (Perkata)** di akhir jawaban.
+   - Kolom: Arab | Latin | Arti
 \n`;
             return prompt + additionalContext;
         }
