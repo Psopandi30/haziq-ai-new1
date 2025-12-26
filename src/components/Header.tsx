@@ -67,6 +67,28 @@ export const Header: React.FC<HeaderProps> = ({
           <h1 className="text-[#0f4c3a] text-lg font-bold tracking-tight hidden sm:block">Haziq AI</h1>
         </div>
 
+        {/* Added Navigation Buttons for Logged In users */}
+        <nav className="hidden md:flex items-center gap-2 ml-auto mr-4">
+          <button
+            onClick={onChatClick}
+            className="px-4 py-1.5 text-xs font-semibold text-[#0f4c3a] bg-gray-50 rounded-full border border-gray-100 hover:bg-white transition-all"
+          >
+            Chat
+          </button>
+          <button
+            onClick={onDownloadClick}
+            className="px-4 py-1.5 text-xs font-medium text-gray-600 hover:text-[#0f4c3a] hover:bg-gray-50 rounded-full transition-colors"
+          >
+            Download
+          </button>
+          <button
+            onClick={onAdminClick}
+            className="px-4 py-1.5 text-xs font-medium text-gray-400 hover:text-[#0f4c3a] transition-colors"
+          >
+            Admin
+          </button>
+        </nav>
+
         <button
           onClick={onMenuClick}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors group border border-transparent hover:border-gray-200"
