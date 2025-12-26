@@ -499,7 +499,24 @@ const App: React.FC = () => {
                       <ReactMarkdown>{msg.text}</ReactMarkdown>
                     </div>
                   ) : (
-                    <p className="text-base leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                    <div className="prose prose-slate max-w-none">
+                      <ReactMarkdown
+                        components={{
+                          h3: ({ node, ...props }) => <h3 className="text-right font-serif text-3xl leading-loose text-[#0f4c3a] py-4" dir="rtl" {...props} />,
+                          table: ({ node, ...props }) => <div className="overflow-x-auto my-4"><table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg" {...props} /></div>,
+                          thead: ({ node, ...props }) => <thead className="bg-gray-50" {...props} />,
+                          th: ({ node, ...props }) => <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" {...props} />,
+                          td: ({ node, ...props }) => <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-t border-gray-200" {...props} />,
+                          p: ({ node, ...props }) => <p className="text-base leading-relaxed mb-4 text-slate-700" {...props} />,
+                          strong: ({ node, ...props }) => <strong className="font-bold text-slate-900" {...props} />,
+                          ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-4 space-y-1" {...props} />,
+                          ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-4 space-y-1" {...props} />,
+                          blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-[#0f4c3a]/30 pl-4 italic my-4 text-slate-600 bg-gray-50/50 py-2 rounded-r" {...props} />
+                        }}
+                      >
+                        {msg.text}
+                      </ReactMarkdown>
+                    </div>
                   )}
                 </div>
 
