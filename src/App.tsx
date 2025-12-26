@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowUp, Loader2, Sparkles, MessageSquare, Copy, ThumbsUp, ThumbsDown, Check } from 'lucide-react';
+import { Send, ArrowUp, Loader2, Sparkles, MessageSquare, Copy, ThumbsUp, ThumbsDown, Check, Mic } from 'lucide-react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { LoginModal } from './components/LoginModal';
@@ -26,6 +26,44 @@ const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
+
+  // --- Speech Recognition Logic ---
+  const [isListening, setIsListening] = useState(false);
+
+  const toggleListening = () => {
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert("Browser anda tidak mendukung fitur Voice Typing. Gunakan Chrome di Android/PC.");
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = 'id-ID';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setInputText(prev => prev + (prev ? ' ' : '') + transcript);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
+      setIsListening(false);
+    };
+
+    recognition.start();
+  };
+  // --------------------------------
 
   // Data State
   // Data State - Fetched from Supabase now
@@ -574,6 +612,15 @@ const App: React.FC = () => {
 
       <div className="fixed bottom-0 left-0 right-0 p-4 pb-6 flex justify-center z-50 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none">
         <div className="w-full max-w-3xl bg-white/90 backdrop-blur-xl border border-white/40 shadow-2xl shadow-slate-300/40 rounded-[2rem] p-2 pl-6 flex items-center gap-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-[#0f4c3a]/20 transition-all pointer-events-auto">
+          <button
+            onClick={toggleListening}
+            className={`p-3 rounded-full transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-slate-400 hover:text-[#0f4c3a] hover:bg-slate-50'}`}
+            title="Tekan untuk bicara (Voice Typing)"
+            disabled={isLoading || !isLoggedIn}
+          >
+            <Mic size={20} />
+          </button>
+
           <input
             type="text"
             value={inputText}
